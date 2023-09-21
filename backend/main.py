@@ -1,6 +1,7 @@
 # main.py
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from app.authentication import token_required, generate_token
 from app.tables.group_access import get_group_access_data, delete_group_access_by_id, update_group_access_by_id
 from app.tables.provider import get_provider_data, delete_provider_by_id, update_provider_by_id
@@ -11,24 +12,24 @@ from app.tables.user_access import get_user_access_data, delete_user_access_by_i
 # Import other table modules here
 
 app = Flask(__name__)
-
-# @app.route('/login', methods=['POST'])
-# def user_login():
-#     return login()
+CORS(app)
 
 @app.route('/login', methods=['POST'])
 def login():
-    username = request.json.get('username')
-    print(username)
-    password = request.json.get('password')
-    print(password)
+    try:
+        data = request.json
+        username = data.get('username')
+        print(username)
+        password = data.get('password')
+        print(password)
 
-    # Replace this with your actual authentication logic (e.g., database lookup)
-    if username == 'valid_user' and password == 'valid_password':
-        token = generate_token(username)
-        return jsonify({'token': token}), 200
-    else:
-        return jsonify({'message': 'Authentication failed'}), 401
+        if username == 'valid_user' and password == 'valid_password':
+            token = generate_token(username)
+            return jsonify({'token': token}), 200
+        else:
+            return jsonify({'message': 'Invalid credentials'}), 401
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/get_group_access_data', methods=['GET'])
 @token_required
@@ -174,4 +175,4 @@ if __name__ == "__main__":
 
 
 # TO DO
-# Update query
+# Login functionality with backend

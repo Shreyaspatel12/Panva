@@ -7,12 +7,15 @@ from flask import request, jsonify
 from app.config import SECRET_KEY
 
 def generate_token(username):
-    payload = {
-        'username': username,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-    }
-    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-    return token
+    try:
+        payload = {
+            'username': username,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        return token
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 def token_required(f):
     @wraps(f)
